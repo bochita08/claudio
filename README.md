@@ -11,55 +11,130 @@ cada input.
 
 ## Requisitos
 
-- Node.js 18 o superior
-- Para probar: **Expo Go** en el telefono, o un emulador de Android / simulador de iOS
+- **Node.js 18 o superior** — https://nodejs.org (instalar el LTS: Next / Next / Finish)
+- Para verlo en el celular: la app **Expo Go** (Play Store / App Store)
+- Para verlo en la compu: **Android Studio** (ver Opción B)
 
-## Como correr (rapido, con Expo Go)
+---
+
+## Opción A — en tu celular (lo más rápido)
 
 ```bash
 npm install
 npm start
 ```
 
-Escanea el QR con Expo Go (Android) o con la camara (iOS).
+Aparece un QR en la terminal:
 
-## Como correr en el emulador de Android Studio
+- **Android**: abrí **Expo Go** → *Scan QR code* → escaneá.
+- **iPhone**: abrí la **cámara** → apuntá al QR → tocá la notificación.
 
-1. Abri Android Studio, arranca un emulador desde **Device Manager** (o crea uno:
-   Pixel + imagen de sistema reciente).
-2. En una terminal:
-   ```bash
-   npm start
-   ```
-3. Con el emulador abierto, en otra terminal (ajusta la ruta del SDK si hace falta):
-   ```bash
-   adb reverse tcp:8081 tcp:8081
-   adb shell am start -a android.intent.action.VIEW -d "exp://10.0.2.2:8081" host.exp.exponent
-   ```
-   > Se hace asi (y no con `npm run android`) porque si la version de Expo Go
-   > instalada no es exactamente la recomendada, `expo start --android` corta
-   > pidiendo confirmacion. `exp://10.0.2.2:8081` es el alias del emulador hacia
-   > tu PC.
-4. La primera vez tarda ~1 min en compilar el bundle. Despues recarga solo.
+> El celu y la PC tienen que estar en la **misma red WiFi**. Si no anda:
+> `npx expo start --tunnel` (más lento, funciona en cualquier red).
 
-Para setear una ubicacion GPS en el emulador (asi funciona "mi ubicacion" en el mapa):
-Android Studio > emulador > `...` (Extended controls) > Location > fija un punto,
-o `adb emu geo fix -58.4173 -34.6037`.
+---
 
-## Como correr en el navegador
+## Opción B — en un emulador de Android (paso a paso, sin saber nada de Android Studio)
+
+### B1. Instalar Android Studio
+
+1. Descargá de **https://developer.android.com/studio** e instalá con todo por defecto.
+2. La primera vez que abre aparece un **Setup Wizard**: elegí **Standard** → Next → Finish.
+   Descarga el SDK de Android (varios GB, tarda). Dejalo terminar.
+
+### B2. Crear un teléfono virtual
+
+1. En la ventana de bienvenida: **More Actions → Virtual Device Manager**.
+   (si tenés un proyecto abierto: menú **Tools → Device Manager**)
+2. Botón **Create device** (o el `+`).
+3. Elegí **Pixel 7** (o cualquier "Pixel") → **Next**.
+4. En **System Image**: elegí una fila que diga **API 34** o **35**. Si tiene un
+   ícono de descarga **⬇** al lado, hacé clic ahí y esperá que baje → **Next**.
+5. **Finish**.
+
+### B3. Arrancar el emulador
+
+1. En el Device Manager, al lado de tu teléfono, hacé clic en el **▶ (play)**.
+2. Esperá 1–2 min hasta ver la **pantalla de inicio de Android** (como un celu prendido).
+3. **Dejá esa ventana abierta.**
+
+### B4. Dejar `adb` accesible (una sola vez)
+
+`adb` habla con el emulador. Viene con Android Studio pero no está en el PATH.
+Agregalo — en **PowerShell**:
+
+```powershell
+[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ";$env:LOCALAPPDATA\Android\Sdk\platform-tools", 'User')
+```
+
+**Cerrá y reabrí la terminal.** Probá:
+
+```bash
+adb devices
+```
+
+Tiene que aparecer `emulator-5554   device`. Si sale eso, seguí.
+
+> Si no querés tocar el PATH: en los comandos de abajo reemplazá `adb` por
+> `"$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"`.
+
+### B5. Correr la app
+
+En la terminal, dentro de la carpeta del proyecto:
+
+```bash
+npm install
+npm start
+```
+
+Cuando dice *"Waiting on http://localhost:8081"*, **apretá la tecla `a`** en esa
+misma terminal.
+
+- Instala **Expo Go** en el emulador solo.
+- Si pregunta *"Expo Go X.X.X is recommended... Install?"* → escribí **`Y`** + Enter.
+- Abre la app. La primera vez tarda ~1 min; después recarga sola al guardar.
+
+### B6. Si la tecla `a` se cuelga o no hace nada
+
+Con el emulador y `npm start` abiertos, en **otra** terminal:
+
+```bash
+adb reverse tcp:8081 tcp:8081
+adb shell am start -a android.intent.action.VIEW -d "exp://10.0.2.2:8081" host.exp.exponent
+```
+
+(asume que Expo Go ya está en el emulador; si no, corré `npm run android` una vez
+o instalálo desde la Play Store del emulador buscando "Expo Go")
+
+### Errores comunes
+
+| Qué ves | Qué hacer |
+|---|---|
+| `adb : El término 'adb' no se reconoce` | Hacé el paso **B4** y reabrí la terminal |
+| `adb devices` no lista nada | El emulador no terminó de arrancar → esperá. Si sigue, reinicialo desde el Device Manager |
+| Emulador en pantalla negra mucho rato | Cerralo y abrilo de nuevo. Si insiste: Device Manager → flecha `▾` → **Wipe Data** |
+| `Something went wrong` en Expo Go | Metro se cortó o se perdió el `adb reverse` → `npm start` + `adb reverse tcp:8081 tcp:8081` |
+| El QR del celu no funciona | Otra red → usá el emulador, o `npx expo start --tunnel` |
+| Avisos de versión de paquetes | `npx expo install --fix` |
+
+### Ubicación GPS en el emulador (para el mapa)
+
+El botón "mi ubicación" del mapa necesita una posición fija:
+
+- Android Studio → en el emulador, barra lateral → **`...` (Extended controls) → Location**
+  → poné un punto → **Set Location**.
+- O por consola: `adb emu geo fix -58.3816 -34.6037` (Buenos Aires).
+
+---
+
+## Opción C — en el navegador
 
 ```bash
 npm run web
 ```
 
-Abre `http://localhost:8081`. Sirve para revisar flujos y validaciones (el mapa
-puede verse distinto que en movil).
-
-## Si aparecen avisos de version de paquetes
-
-```bash
-npx expo install --fix
-```
+Abre `http://localhost:8081`. Sirve para revisar flujos y validaciones rápido
+(el mapa puede verse distinto que en móvil).
 
 ## Cuenta demo
 
