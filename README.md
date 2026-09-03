@@ -1,5 +1,8 @@
 # PROP+
 
+[![CI](https://github.com/bochita08/claudio/actions/workflows/ci.yml/badge.svg)](https://github.com/bochita08/claudio/actions/workflows/ci.yml)
+[![E2E Android](https://github.com/bochita08/claudio/actions/workflows/e2e-android.yml/badge.svg)](https://github.com/bochita08/claudio/actions/workflows/e2e-android.yml)
+
 App mobile de prueba hecha con **Expo SDK 54 + React Native 0.81 + TypeScript**.
 Incluye autenticacion (mock), listado de propiedades con filtros, mapa con
 OpenStreetMap, detalle con carta de agente, panel de estadisticas y edicion de
@@ -130,8 +133,25 @@ Si mas adelante queres Google Maps:
 > Nota: mostrar el mapa en el SDK nativo movil de Google no tiene costo por uso,
 > pero Google igual exige una tarjeta cargada para activar la key.
 
+## CI / GitHub Actions
+
+| Workflow | Archivo | Cuándo corre | Qué hace |
+|---|---|---|---|
+| **CI** | `.github/workflows/ci.yml` | cada push a `master` y cada PR | `npm ci` + `tsc --noEmit` + `expo-doctor` + `expo export` (bundle) |
+| **E2E Android** | `.github/workflows/e2e-android.yml` | manual (**Actions → E2E Android → Run workflow**) y lunes 6:00 UTC | levanta un emulador, buildea el APK release, corre los tests Appium del submódulo `e2e/` y sube el reporte Allure como artifact |
+
+Los tests E2E viven en el repo aparte **[propplus-e2e](https://github.com/bochita08/propplus-e2e)**,
+incluido acá como submódulo git en `e2e/`. Para clonar con todo:
+
+```bash
+git clone --recurse-submodules https://github.com/bochita08/claudio
+```
+
+El reporte de la última corrida E2E: **Actions → E2E Android → (última run) → Artifacts → `allure-report`**.
+
 ## Nota
 
-Es un proyecto de prueba: no hay backend ni tests. La capa `src/services/` esta
-escrita como si fuera un cliente HTTP (funciones async, errores tipados, latencia
-simulada) para que reemplazar el mock por una API real sea directo.
+Es un proyecto de prueba: no hay backend. Los tests E2E están en `propplus-e2e/`.
+La capa `src/services/` está escrita como si fuera un cliente HTTP (funciones
+async, errores tipados, latencia simulada) para que reemplazar el mock por una
+API real sea directo.
