@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "PROP+",
+    "slug": "prop-plus",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "propplus",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0E7C66"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.propplus.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Usamos tu ubicacion para centrar el mapa cerca tuyo."
+      }
+    },
+    "android": {
+      "package": "com.propplus.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Usamos tu ubicacion para centrar el mapa cerca tuyo."
+        }
+      ],
+      "expo-font",
+      "expo-asset"
+    ]
+  }
+}
