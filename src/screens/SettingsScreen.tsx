@@ -16,7 +16,7 @@ import Button from '../components/Button';
 import FormInput from '../components/FormInput';
 import { useAuth } from '../context/AuthContext';
 import { t } from '../i18n';
-import { ApiError } from '../services/api';
+import { apiErrorCode } from '../services/api';
 import { colors, spacing, typography } from '../theme';
 import {
   sanitizers,
@@ -90,7 +90,7 @@ export default function SettingsScreen({ navigation }: Props) {
         });
         setBanner({ kind: 'success', message: t.settings.saveOk });
       } catch (err) {
-        if (err instanceof ApiError && err.code === 'EMAIL_TAKEN') {
+        if (apiErrorCode(err) === 'EMAIL_TAKEN') {
           setBanner({ kind: 'error', message: t.settings.emailTaken });
         } else {
           setBanner({ kind: 'error', message: t.settings.saveError });

@@ -8,7 +8,7 @@ import FormInput from '../../components/FormInput';
 import { useAuth } from '../../context/AuthContext';
 import { t } from '../../i18n';
 import { AuthStackParamList } from '../../navigation/types';
-import { ApiError } from '../../services/api';
+import { apiErrorCode } from '../../services/api';
 import { colors, spacing, typography } from '../../theme';
 import { sanitizers, validateEmail, validateLoginPassword } from '../../utils/validation';
 import { useForm } from '../../hooks/useForm';
@@ -44,7 +44,7 @@ export default function SignInScreen({ navigation, route }: Props) {
         await signIn(values.email, values.password);
         // Al setear el usuario, el RootNavigator cambia solo a la app.
       } catch (err) {
-        if (err instanceof ApiError && err.code === 'INVALID_CREDENTIALS') {
+        if (apiErrorCode(err) === 'INVALID_CREDENTIALS') {
           setSubmitError(t.auth.invalidCredentials);
         } else {
           setSubmitError(t.auth.genericError);

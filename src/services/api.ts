@@ -12,7 +12,19 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
     this.code = code;
+    // Sin esto, `err instanceof ApiError` puede dar false en el build release
+    // (Hermes rompe la cadena de prototipos al extender Error).
+    Object.setPrototypeOf(this, ApiError.prototype);
   }
+}
+
+/** Devuelve el `code` de un error de la API, sea o no `instanceof ApiError`. */
+export function apiErrorCode(err: unknown): string | undefined {
+  if (err instanceof ApiError) return err.code;
+  if (err && typeof err === 'object' && 'code' in err) {
+    return (err as { code?: string }).code;
+  }
+  return undefined;
 }
 
 /** Simula latencia de red. */

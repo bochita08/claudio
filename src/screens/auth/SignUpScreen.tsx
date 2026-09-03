@@ -8,7 +8,7 @@ import FormInput from '../../components/FormInput';
 import { useAuth } from '../../context/AuthContext';
 import { t } from '../../i18n';
 import { AuthStackParamList } from '../../navigation/types';
-import { ApiError } from '../../services/api';
+import { apiErrorCode } from '../../services/api';
 import { colors, spacing, typography } from '../../theme';
 import {
   sanitizers,
@@ -73,7 +73,7 @@ export default function SignUpScreen({ navigation }: Props) {
         });
         navigation.navigate('SignIn', { notice: t.auth.signUpOk });
       } catch (err) {
-        if (err instanceof ApiError && err.code === 'EMAIL_TAKEN') {
+        if (apiErrorCode(err) === 'EMAIL_TAKEN') {
           setSubmitError(t.auth.emailTaken);
         } else {
           setSubmitError(t.auth.genericError);
