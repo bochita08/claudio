@@ -149,6 +149,8 @@ git clone --recurse-submodules https://github.com/bochita08/claudio
 
 El reporte de la última corrida E2E: **Actions → E2E Android → (última run) → Artifacts → `allure-report`**.
 
+> **Detalle completo de CI/CD, workflows, submódulo y troubleshooting: [`CI.md`](CI.md).**
+
 ## Nota
 
 Es un proyecto de prueba: no hay backend. Los tests E2E están en `propplus-e2e/`.
