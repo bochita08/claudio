@@ -1,0 +1,87 @@
+name: E2E Android
+
+on:
+  workflow_dispatch: # botón "Run workflow" a mano
+  schedule:
+    - cron: '0 6 * * 1' # lunes 6:00 UTC
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout PROP+ (con el submódulo e2e)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Habilitar KVM (acelera el emulador)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Dependencias de PROP+
+        run: npm ci
+
+      - name: Buildear APK release
+        run: |
+          npx expo prebuild --platform android --no-install
+          cd android
+          ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64
+
+      - name: Dependencias de los tests
+        working-directory: e2e
+        run: |
+          npm ci
+          npx appium driver install uiautomator2
+
+      - name: Correr E2E en el emulador
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          working-directory: e2e
+          script: |
+            mkdir -p appium/apps
+            cp ../android/app/build/outputs/apk/release/app-release.apk appium/apps/propplus.apk
+            APPIUM_APP=appium/apps/propplus.apk npm test
+
+      - name: Generar reporte Allure
+        if: always()
+        working-directory: e2e
+        run: npm run report:generate
+
+      - name: Subir reporte Allure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: e2e/allure-report
+          retention-days: 14
+
+      - name: Subir logs y screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            e2e/logs
+            e2e/allure-results
+          retention-days: 14

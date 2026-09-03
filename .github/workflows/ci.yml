@@ -5,6 +5,11 @@ on:
     branches: [master]
   pull_request:
 
+# Cancela corridas viejas del mismo branch/PR.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
