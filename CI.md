@@ -86,7 +86,7 @@ pull_request:
    ```
    → `android/app/build/outputs/apk/release/app-release.apk`
    (el bundle JS va adentro del APK, no necesita Metro).
-6. `npm ci` + `appium driver install uiautomator2` dentro de `e2e/`.
+6. `npm ci` dentro de `e2e/` (el driver uiautomator2 viene como dependencia, Appium 3 lo autodetecta).
 7. **Levanta el emulador** (`reactivecircus/android-emulator-runner`, API 34, x86_64,
    google_apis) y adentro corre:
    ```bash

@@ -45,9 +45,9 @@ jobs:
 
       - name: Dependencias de los tests
         working-directory: e2e
-        run: |
-          npm ci
-          npx appium driver install uiautomator2
+        # el driver uiautomator2 viene como dependencia en package.json;
+        # Appium 3 lo autodetecta, no hace falta "appium driver install".
+        run: npm ci
 
       - name: Correr E2E en el emulador
         uses: reactivecircus/android-emulator-runner@v2
