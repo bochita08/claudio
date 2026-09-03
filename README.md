@@ -151,6 +151,39 @@ El reporte de la última corrida E2E: **Actions → E2E Android → (última run
 
 > **Detalle completo de CI/CD, workflows, submódulo y troubleshooting: [`CI.md`](CI.md).**
 
+### Ver el reporte Allure descargado de CI
+
+El artifact `allure-report` es HTML pero **no se abre con doble clic** (Allure
+carga los datos con `fetch()` y el navegador lo bloquea en `file://`). Hay que
+servir la carpeta:
+
+1. En la corrida → **Artifacts → `allure-report`** → descargar y descomprimir.
+2. Servir la carpeta descomprimida (sirve el `index.html` de adentro):
+
+   ```bash
+   npx http-server "C:\ruta\allure-report" -o
+   ```
+
+   `-o` abre el navegador solo en `http://localhost:8080` (que ya carga
+   `index.html`). `Ctrl+C` para cerrar el server.
+
+   Alternativa sin `http-server`:
+
+   ```bash
+   cd "C:\ruta\allure-report"
+   python -m http.server 8000
+   ```
+
+   y abrís `http://localhost:8000`.
+
+Si en vez de `allure-report` bajaste `e2e-logs` (tiene `allure-results/`):
+
+```bash
+npx allure serve "C:\ruta\allure-results"
+```
+
+genera y abre el reporte en un solo comando.
+
 ## Nota
 
 Es un proyecto de prueba: no hay backend. Los tests E2E están en `propplus-e2e/`.
