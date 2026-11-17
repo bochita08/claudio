@@ -9,6 +9,10 @@ OpenStreetMap, detalle con carta de agente, panel de estadisticas y edicion de
 perfil. Todos los formularios tienen validaciones con mensaje de error debajo de
 cada input.
 
+## Probarla en el navegador
+
+Versión web publicada en GitHub Pages: **https://bochita08.github.io/claudio/** (cuenta demo: `demo@propplus.com` / `Demo1234`). Es la misma app compilada con react-native-web (`npx expo export -p web`); el mapa usa un iframe en web (`LeafletMap.web.tsx`) en lugar del WebView. Cada push a `master` la vuelve a publicar.
+
 ## Requisitos
 
 - **Node.js 18 o superior** — https://nodejs.org (instalar el LTS: Next / Next / Finish)

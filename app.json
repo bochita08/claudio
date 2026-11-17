@@ -37,6 +37,9 @@
       ],
       "expo-font",
       "expo-asset"
-    ]
+    ],
+    "experiments": {
+      "baseUrl": "/claudio"
+    }
   }
 }
